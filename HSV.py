@@ -46,6 +46,15 @@ while (cap.isOpened()):
 
     hsv=cv2.cvtColor(camera, cv2.COLOR_BGR2HSV)
     mask=cv2.inRange(hsv,(hmin,smin,vmin),(hmax,smax,vmax))
+    
+    contours, hierarchy = cv2.findContours(mask, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
+    cv2.drawContours(camera, contours, -1, (0,255,0), 1)
+    contour_sizes = [(cv2.contourArea(contour), contour) for contour in contours]
+    biggest_contour = max(contour_sizes, key=lambda x: x[0])[1]
+    cv2.drawContours(camera, biggest_contour, -1, (0,255,0), 3)
+    x,y,w,h = cv2.boundingRect(biggest_contour)
+    cv2.rectangle(camera,(x,y),(x+w,y+h),(0,255,0),1)
+    
     cv2.imshow('Thresholding',mask)
     cv2.imshow('camera', camera)
     cv2.imshow('hsv', hsv)
